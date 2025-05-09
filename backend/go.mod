@@ -1,6 +1,6 @@
 module feedback-backend
 
-go 1.23.5
+go 1.21
 
 require (
 	github.com/gin-gonic/gin v1.10.0
