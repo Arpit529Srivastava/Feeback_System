@@ -17,7 +17,7 @@ var DB *mongo.Database
 func ConnectDB() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Warning: .env file not found, relying on environment variables")
 	}
 
 	mongoURI := os.Getenv("MONGODB_URI")
