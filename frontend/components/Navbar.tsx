@@ -19,7 +19,7 @@ export default function Navbar() {
           <span className="text-lg font-bold text-white tracking-widest hidden sm:inline">Futurist</span>
         </Link>
         <div className="flex gap-2 sm:gap-6">
-          {navLinks.map((link, i) => (
+          {navLinks.map((link) => (
             <motion.div
               key={link.name}
               whileHover={{ scale: 1.1, textShadow: "0 0 8px #ff2d2d" }}
