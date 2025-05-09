@@ -19,7 +19,7 @@ func ConnectDB() {
 	if err != nil {
 		log.Println("Warning: .env file not found, relying on environment variables")
 	}
-
+	// get the mongo uri from the environment variable
 	mongoURI := os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
 		log.Fatal("MONGODB_URI environment variable is not set")
