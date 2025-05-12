@@ -19,7 +19,7 @@ export default function FeedbackPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`, {
+      const response = await fetch(`http://localhost:8080/api/feedback/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
