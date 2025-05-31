@@ -24,9 +24,11 @@ jobs:
         cache: 'npm'
     - name: "Install dependencies"
       run: npm i
+      working-directory: ./frontend
 
     - name: "Building the frontend"
       run: npm run build
+      working-directory: ./frontend
  
   test:
 
@@ -45,6 +47,8 @@ jobs:
         cache: 'npm'
     - name: "Install dependencies"
       run: npm i
+      working-directory: ./frontend
       
     - name: "Testing the frontend"
       run: npm run test
+      working-directory: ./frontend
