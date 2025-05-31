@@ -38,6 +38,7 @@ func (fc *FeedbackController) CreateFeedback(c *gin.Context) {
 	}
 
 	feedback.ID = result.InsertedID.(primitive.ObjectID)
+	c.Header("Content-Type", "application/json")
 	c.JSON(http.StatusCreated, feedback)
 }
 
@@ -55,5 +56,6 @@ func (fc *FeedbackController) GetAllFeedback(c *gin.Context) {
 		return
 	}
 
+	c.Header("Content-Type", "application/json")
 	c.JSON(http.StatusOK, feedbacks)
 }

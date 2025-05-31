@@ -20,7 +20,7 @@ export default function ViewFeedbackPage() {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`);
+        const response = await fetch('http://localhost:8080/api/feedback/');
         if (!response.ok) {
           throw new Error('Failed to fetch feedbacks');
         }
