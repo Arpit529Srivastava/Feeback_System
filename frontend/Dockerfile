@@ -1,6 +1,5 @@
 # Build stage
 FROM node:20.11-alpine
-
 WORKDIR /app
 
 # Copy package files
