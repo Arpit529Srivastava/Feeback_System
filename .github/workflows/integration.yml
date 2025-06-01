@@ -7,10 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-frontend:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -31,10 +29,8 @@ jobs:
       run: npm run build
       working-directory: ./frontend
  
-  test:
-
+  test-frontend:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -54,3 +50,53 @@ jobs:
     - name: "Testing the frontend"
       run: npm run test
       working-directory: ./frontend
+
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+        cache: true
+        cache-dependency-path: backend/go.sum
+
+    - name: Install dependencies
+      run: go mod download
+      working-directory: ./backend
+
+    - name: Build backend
+      run: go build -v ./...
+      working-directory: ./backend
+
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+        cache: true
+        cache-dependency-path: backend/go.sum
+
+    - name: Install dependencies
+      run: go mod download
+      working-directory: ./backend
+
+    - name: Run backend tests
+      run: go test -v ./...
+      working-directory: ./backend
+      env:
+        MONGODB_URI: mongodb://localhost:27017/feedback_test
+        PORT: 8080
+        GIN_MODE: test
