@@ -26,4 +26,5 @@ func main() {
 	feedbackController := controllers.NewFeedbackController(config.DB)
 	routes.SetupFeedbackRoutes(r, feedbackController)
 	r.Run(":8080")
+	// removed the cors policy because it was not working..done
 }
