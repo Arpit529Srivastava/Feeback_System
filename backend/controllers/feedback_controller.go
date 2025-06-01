@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
@@ -11,21 +12,72 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type FeedbackController struct {
-	collection *mongo.Collection
+type FeedbackCollection interface {
+	InsertOne(ctx context.Context, document interface{}, opts ...*options.InsertOneOptions) (*mongo.InsertOneResult, error)
+	Find(ctx context.Context, filter interface{}, opts ...*options.FindOptions) (*mongo.Cursor, error)
 }
 
-func NewFeedbackController(db *mongo.Database) *FeedbackController {
+type FeedbackController struct {
+	collection   FeedbackCollection
+	decodeCursor func(cursor *mongo.Cursor, out interface{}) error
+}
+
+func NewFeedbackController(collection FeedbackCollection) *FeedbackController {
 	return &FeedbackController{
-		collection: db.Collection("feedbacks"),
+		collection: collection,
+		decodeCursor: func(cursor *mongo.Cursor, out interface{}) error {
+			return cursor.All(context.Background(), out)
+		},
 	}
+}
+
+// ValidationError represents a validation error
+type ValidationError struct {
+	Field   string
+	Message string
+}
+
+func (e ValidationError) Error() string {
+	return e.Message
+}
+
+// validateFeedback checks if all required fields are present and valid
+func validateFeedback(feedback models.Feedback) error {
+	if feedback.Name == "" {
+		return ValidationError{Field: "name", Message: "name is required"}
+	}
+	if feedback.Email == "" {
+		return ValidationError{Field: "email", Message: "email is required"}
+	}
+	if feedback.Message == "" {
+		return ValidationError{Field: "message", Message: "message is required"}
+	}
+	if feedback.Rating < 1 || feedback.Rating > 5 {
+		return ValidationError{Field: "rating", Message: "rating must be between 1 and 5"}
+	}
+	return nil
 }
 
 func (fc *FeedbackController) CreateFeedback(c *gin.Context) {
 	var feedback models.Feedback
 	if err := c.ShouldBindJSON(&feedback); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Validate feedback
+	if err := validateFeedback(feedback); err != nil {
+		var validationErr ValidationError
+		if errors.As(err, &validationErr) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": validationErr.Message,
+				"field": validationErr.Field,
+			})
+			return
+		}
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -51,7 +103,7 @@ func (fc *FeedbackController) GetAllFeedback(c *gin.Context) {
 	}
 	defer cursor.Close(context.Background())
 
-	if err = cursor.All(context.Background(), &feedbacks); err != nil {
+	if err = fc.decodeCursor(cursor, &feedbacks); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode feedbacks"})
 		return
 	}
