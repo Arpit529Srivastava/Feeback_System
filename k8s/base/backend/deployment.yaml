@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feedback-backend
+  labels:
+    app: feedback-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: feedback-backend
+  template:
+    metadata:
+      labels:
+        app: feedback-backend
+    spec:
+      containers:
+      - name: feedback-backend
+        image: feedback-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: mongodb_uri
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: port
+        - name: GIN_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: gin_mode
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5 

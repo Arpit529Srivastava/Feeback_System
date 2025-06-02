@@ -1,0 +1,61 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: feedback-staging
+
+resources:
+- ../../base/backend
+- ../../base/frontend
+- ../../base/mongodb
+- ../../base/ingress
+
+# Staging-specific configurations
+patches:
+- target:
+    kind: Deployment
+    name: feedback-backend
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 2
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: "128Mi"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: "100m"
+
+- target:
+    kind: Deployment
+    name: feedback-frontend
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 2
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: "128Mi"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: "100m"
+
+- target:
+    kind: Ingress
+    name: feedback-ingress
+  patch: |-
+    - op: replace
+      path: /spec/rules/0/host
+      value: feedback-staging.example.com
+
+# Staging-specific ConfigMap patches
+configMapGenerator:
+- name: backend-config
+  behavior: merge
+  literals:
+  - gin_mode=release
+  - mongodb_uri=mongodb://mongodb:27017/feedback-staging
+
+- name: frontend-config
+  behavior: merge
+  literals:
+  - api_url=http://feedback-backend:8080 

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: feedback-frontend
+  labels:
+    app: feedback-frontend
+spec:
+  selector:
+    app: feedback-frontend
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+  type: ClusterIP 
