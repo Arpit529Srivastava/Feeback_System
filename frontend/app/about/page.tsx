@@ -13,7 +13,7 @@ export default function AboutPage() {
           <div className="bg-black/80 rounded-xl border border-red-700 p-6 text-center shadow-lg">
             <h2 className="text-xl font-bold text-white mb-2">Arpit Srivastava</h2>
             <p className="text-red-200 mb-1">Frontend Developer</p>
-            <p className="text-sm text-white">Loves crafting beautiful UIs and seamless user experiences.</p>
+            <p className="text-sm text-white">Enjoys crafting beautiful UIs and seamless user experiences.</p>
           </div>
           <div className="bg-black/80 rounded-xl border border-red-700 p-6 text-center shadow-lg">
             <h2 className="text-xl font-bold text-white mb-2">Arpit Srivastava</h2>
