@@ -1,17 +1,18 @@
-name: Integration
+name: Test
 
 on:
-  push:
-    branches: [ "main" ]
+  push: 
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  build-frontend:
+  test-frontend:
     runs-on: ubuntu-latest
+   
     strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
+        matrix:
+            node-version: [18.x, 20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -24,27 +25,29 @@ jobs:
     - name: "Install dependencies"
       run: npm i
       working-directory: ./frontend
-
-    - name: "Building the frontend"
-      run: npm run build
+  
+    - name: "Testing the frontend"
+      run: npm run test
       working-directory: ./frontend
+      #testing the backend
 
-  build-backend:
+  test-backend:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Set up Go
+    - name: "Setup Go"
       uses: actions/setup-go@v5
       with:
         go-version: '1.21'
         cache: true
         cache-dependency-path: backend/go.sum
-
-    - name: Install dependencies
+    - name: "Install dependencies"
       run: go mod download
       working-directory: ./backend
-
-    - name: Build backend
-      run: go build -v ./...
+      
+    - name: "Testing Started"
+      run: go test ./...
       working-directory: ./backend
+      env:
+        MONGODB_URI: mongodb://localhost:27017/feedback_test
+        PORT: 8080
