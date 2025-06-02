@@ -229,7 +229,7 @@ func TestCreateFeedback(t *testing.T) {
 			{
 				name:          "invalid rating 0",
 				rating:        0,
-				expectedCode:  http.StatusOK,
+				expectedCode:  http.StatusBadRequest,
 				shouldPass:    false,
 				errorContains: "rating must be between 1 and 5",
 			},
