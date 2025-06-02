@@ -24,27 +24,27 @@ jobs:
 
             async function handleLabel(labelName, color, description) {
                 try {
-                    await github.issues.addLabels({
-                    owner: repoOwner,
-                    repo: repoName,
-                    issue_number: issueNumber,
-                    labels: [labelName]
+                    await github.rest.issues.addLabels({
+                        owner: repoOwner,
+                        repo: repoName,
+                        issue_number: issueNumber,
+                        labels: [labelName]
                     });
                 } catch (error) {
-                 if (error.status === 404) {
-                    await github.issues.createLabel({
-                    owner: repoOwner,
-                    repo: repoName,
-                    name: labelName,
-                    color: color || "0e8a16",
-                    description: description || ""
-                    });
-                    await github.issues.addLabels({
-                    owner: repoOwner,
-                    repo: repoName,
-                    issue_number: issueNumber,
-                    labels: [labelName]
-                    });
+                    if (error.status === 404) {
+                        await github.rest.issues.createLabel({
+                            owner: repoOwner,
+                            repo: repoName,
+                            name: labelName,
+                            color: color || "0e8a16",
+                            description: description || ""
+                        });
+                        await github.rest.issues.addLabels({
+                            owner: repoOwner,
+                            repo: repoName,
+                            issue_number: issueNumber,
+                            labels: [labelName]
+                        });
                     } else {
                         console.error(`Error adding label ${labelName}:`, error);
                     }
@@ -117,6 +117,12 @@ jobs:
                         const labelName = parseCommand(comment, '/label');
                         if (labelName) {
                             await handleLabel(labelName, "0e8a16");
+                            await github.rest.issues.createComment({
+                                owner: repoOwner,
+                                repo: repoName,
+                                issue_number: issueNumber,
+                                body: `✅ Added label "${labelName}"`
+                            });
                         }
                     } catch (error) {
                         await github.rest.issues.createComment({
