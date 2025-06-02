@@ -31,7 +31,6 @@ Describe the changes you've made in this PR:
 Describe the tests you ran:
 - [ ] Unit tests
 - [ ] Integration tests
-- [ ] Manual tests
 - [ ] Other (please specify)
 
 Please describe the test cases and expected behavior:
@@ -67,16 +66,6 @@ List any related PRs that this PR depends on or is related to:
 - PR #XXX: Brief description
 -->
 
-## Comments:
-
-<!--Mention any comments and additional notes arising from this PR
--->
-
-## Reviewer Notes
-
-<!--Any specific areas you'd like reviewers to focus on?
--->
-
 ## Checklist
 Before submitting this PR, please ensure you have:
 - [ ] Added/updated tests for the changes
@@ -86,3 +75,4 @@ Before submitting this PR, please ensure you have:
 - [ ] Ensured code follows project style guidelines
 - [ ] Added appropriate labels to the PR
 - [ ] Self-reviewed the code
+- [ ] commits are signed
