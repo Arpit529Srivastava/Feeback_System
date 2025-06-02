@@ -1,0 +1,113 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    - name: "Install dependencies"
+      run: npm i
+      working-directory: ./frontend
+    - name: "Testing the frontend"
+      run: npm run test
+      working-directory: ./frontend
+
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: "Setup Go"
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+        cache: true
+        cache-dependency-path: backend/go.sum
+    - name: "Install dependencies"
+      run: go mod download
+      working-directory: ./backend
+    - name: "Testing Started"
+      run: go test ./...
+      working-directory: ./backend
+      env:
+        MONGODB_URI: mongodb://localhost:27017/feedback_test
+        PORT: 8080
+
+  build-frontend:
+    needs: [test-frontend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    - name: "Install dependencies"
+      run: npm i
+      working-directory: ./frontend
+    - name: "Building the frontend"
+      run: npm run build
+      working-directory: ./frontend
+
+  build-backend:
+    needs: [test-backend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+        cache: true
+        cache-dependency-path: backend/go.sum
+    - name: Install dependencies
+      run: go mod download
+      working-directory: ./backend
+    - name: Build backend
+      run: go build -v ./...
+      working-directory: ./backend
+
+  deploy-frontend:
+    needs: [build-frontend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build Frontend Docker Image
+      run: docker build -t arpitsrivastava529/feedback-system-frontend:latest ./frontend
+    - name: Login to Docker Hub
+      run: echo "${{secrets.DOCKER_PASSWORD}}" | docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
+    - name: Push Frontend Docker Image
+      run: docker push arpitsrivastava529/feedback-system-frontend:latest
+
+  deploy-backend:
+    needs: [build-backend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build Backend Docker Image
+      run: docker build -t arpitsrivastava529/feedback-system-backend:latest ./backend
+    - name: Login to Docker Hub
+      run: echo "${{secrets.DOCKER_PASSWORD}}" | docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
+    - name: Push Backend Docker Image
+      run: docker push arpitsrivastava529/feedback-system-backend:latest 
