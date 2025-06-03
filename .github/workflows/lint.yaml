@@ -1,0 +1,28 @@
+name: Lint
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-frontend:
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    runs-on: ubuntu-latest
+    steps:  
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./frontend
+    - name: Run lint
+      run: npm run lint
+      working-directory: ./frontend
