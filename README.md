@@ -1,12 +1,13 @@
 # FeedBack System
 
-A full-stack feedback management system with a Go backend and a Next.js (TypeScript) frontend.
+A full-stack feedback management system with a Go backend, MongoDB database, and a Next.js (TypeScript) frontend.
 
 ## Table of Contents
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
   - [Backend Setup](#backend-setup)
   - [Frontend Setup](#frontend-setup)
 - [Docker Usage](#docker-usage)
@@ -19,16 +20,35 @@ A full-stack feedback management system with a Go backend and a Next.js (TypeScr
 ## Features
 
 - Collect and manage user feedback
-- RESTful API backend (Go)
+- RESTful API backend (Go + Gin)
+- MongoDB database for data persistence
 - Modern frontend (Next.js + TypeScript)
 - Dockerized for easy deployment
+- Complete development environment with docker-compose
 
 ## Tech Stack
 
-- **Backend:** Go, Gin (or similar), Docker
-- **Frontend:** Next.js, React, TypeScript, Docker
+- **Backend:**
+  - Go
+  - Gin Web Framework
+  - MongoDB
+  - Docker
+- **Frontend:**
+  - Next.js 14
+  - React
+  - TypeScript
+  - Jest for testing
+  - ESLint for code quality
+  - Docker
 
 ## Getting Started
+
+### Prerequisites
+
+- Go 1.21 or later
+- Node.js 18 or later
+- Docker and Docker Compose (for containerized setup)
+- MongoDB (if running locally)
 
 ### Backend Setup
 
@@ -68,7 +88,18 @@ A full-stack feedback management system with a Go backend and a Next.js (TypeScr
 
 ## Docker Usage
 
-You can run both backend and frontend using Docker.
+You can run the entire application stack using Docker Compose:
+
+```bash
+docker-compose up
+```
+
+This will start:
+- MongoDB (port 27018)
+- Backend API (port 8080)
+- Frontend (port 3000)
+
+To run individual services:
 
 ### Backend
 
@@ -98,13 +129,17 @@ FeedBack_System/
 │   ├── config/
 │   ├── go.mod
 │   └── Dockerfile
-└── frontend/
-    ├── app/
-    ├── components/
-    ├── public/
-    ├── package.json
-    ├── next.config.ts
-    └── Dockerfile
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── public/
+│   ├── package.json
+│   ├── next.config.js
+│   ├── tsconfig.json
+│   ├── jest.config.js
+│   └── Dockerfile
+├── docker-compose.yml
+└── .github/
 ```
 
 ## Contributing
@@ -113,4 +148,4 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## License
 
-[MIT](LICENSE) (or your preferred license)
+[MIT](LICENSE)
