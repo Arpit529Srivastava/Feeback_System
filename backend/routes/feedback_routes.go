@@ -13,3 +13,4 @@ func SetupFeedbackRoutes(router *gin.Engine, feedbackController *controllers.Fee
 		feedbackRoutes.GET("/", feedbackController.GetAllFeedback)
 	}
 }
+// done
