@@ -193,3 +193,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 **Infrastructure Repository**: [Feedback System Infrastructure](https://github.com/arpit529srivastava/Feedback_system_Infra)
 
 For infrastructure setup, deployment configurations, and cloud resource management.
+
+### API Endpoints
+
+-   `GET /api/feedback`: Get all feedback submissions.
+-   `POST /api/feedback`: Create a new feedback submission.
+-   `GET /health`: Check the health of the backend service.
